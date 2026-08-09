@@ -37,7 +37,6 @@ function Settings({ user, onLogout }) {
           </div>
         </div>
       </div>
-
       <div className="bg-gray-800 p-8 rounded-lg shadow-xl mb-8 max-w-md">
         <h2 className="text-2xl font-bold mb-6">Quick Links</h2>
         <div className="space-y-3">
@@ -49,7 +48,6 @@ function Settings({ user, onLogout }) {
           </a>
         </div>
       </div>
-
       <div className="bg-gray-800 p-8 rounded-lg shadow-xl mb-8 max-w-md">
         <h2 className="text-2xl font-bold mb-4">About</h2>
         <p className="text-gray-300 mb-4">AI Fitness Coach - Track your workouts, nutrition, and progress all in one place.</p>
@@ -60,7 +58,6 @@ function Settings({ user, onLogout }) {
           <div>🚀 Hosted on Railway & Vercel</div>
         </div>
       </div>
-
       <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded text-lg transition max-w-md w-full">
         🚪 Logout
       </button>
