@@ -19,22 +19,18 @@ function Settings({ user, onLogout }) {
             <label className="block text-gray-400 text-sm mb-2">Username</label>
             <div className="bg-gray-700 p-3 rounded text-white">{user?.username || 'N/A'}</div>
           </div>
-
           <div>
             <label className="block text-gray-400 text-sm mb-2">Fitness Level</label>
             <div className="bg-gray-700 p-3 rounded text-white">{user?.fitness_level || 'Not set'}</div>
           </div>
-
           <div>
             <label className="block text-gray-400 text-sm mb-2">Goal</label>
             <div className="bg-gray-700 p-3 rounded text-white">{user?.goals || 'Not set'}</div>
           </div>
-
           <div>
             <label className="block text-gray-400 text-sm mb-2">Current Streak</label>
             <div className="bg-gray-700 p-3 rounded text-white">{user?.current_streak || 0} days 🔥</div>
           </div>
-
           <div>
             <label className="block text-gray-400 text-sm mb-2">Longest Streak</label>
             <div className="bg-gray-700 p-3 rounded text-white">{user?.longest_streak || 0} days</div>
