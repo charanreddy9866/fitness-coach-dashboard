@@ -28,7 +28,7 @@ function App() {
 
   const fetchUserData = async (discordId) => {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('users')
         .select('*')
         .eq('discord_id', discordId)
