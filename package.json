@@ -39,5 +39,6 @@
     ]
   },
   
-  "devDependencies": {}
+  "devDependencies": {},
+  // Force rebuild to pick up env vars
 }
