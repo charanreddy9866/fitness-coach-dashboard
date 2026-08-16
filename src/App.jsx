@@ -12,9 +12,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_KEY
-  );
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_KEY
+);
 
   useEffect(() => {
     const saved = localStorage.getItem('discordId');
