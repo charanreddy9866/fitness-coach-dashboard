@@ -1,132 +1,119 @@
-import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
-import Dashboard from './pages/Dashboard';
-import Progress from './pages/Progress';
-import Nutrition from './pages/Nutrition';
-import Settings from './pages/Settings';
-import Navbar from './components/Navbar';
-import './App.css';
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_KEY
-);
+import { useState } from 'react';
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState(null);
-
-  useEffect(() => {
-    const savedUserId = localStorage.getItem('discordId');
-    if (savedUserId) {
-      fetchUserData(savedUserId);
-    }
-    setLoading(false);
-  }, []);
-
-  const fetchUserData = async (discordId) => {
-    try {
-      const { data } = await supabase
-        .from('users')
-        .select('*')
-        .eq('discord_id', discordId)
-        .single();
-
-      if (data) {
-        setUser(discordId);
-        setUserData(data);
-      }
-    } catch (error) {
-      console.error('Error fetching user:', error);
-    }
-  };
-
-  const handleLogin = (discordId) => {
-    localStorage.setItem('discordId', discordId);
-    setUser(discordId);
-    fetchUserData(discordId);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('discordId');
-    setUser(null);
-    setUserData(null);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-2xl">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-5xl font-bold text-white mb-4">
-            💪 Fitness Coach Dashboard
-          </h1>
-          <p className="text-gray-300 mb-8 text-xl">
-            Track your workouts, nutrition, and progress all in one place
-          </p>
-          <LoginForm onLogin={handleLogin} />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <Router>
-      <div className="min-h-screen bg-gray-900">
-        <Navbar user={userData} onLogout={handleLogout} />
-        <Routes>
-          <Route path="/" element={<Dashboard user={userData} supabase={supabase} />} />
-          <Route path="/progress" element={<Progress user={userData} supabase={supabase} />} />
-          <Route path="/nutrition" element={<Nutrition user={userData} supabase={supabase} />} />
-          <Route path="/settings" element={<Settings user={userData} onLogout={handleLogout} />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </Router>
-  );
-}
-
-function LoginForm({ onLogin }) {
   const [discordId, setDiscordId] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleAccess = (e) => {
     e.preventDefault();
     if (discordId.trim()) {
-      onLogin(discordId);
+      localStorage.setItem('discordId', discordId);
+      setIsLoading(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md">
-      <label className="block text-white mb-4 font-semibold">
-        Enter Your Discord ID
-      </label>
-      <input
-        type="text"
-        value={discordId}
-        onChange={(e) => setDiscordId(e.target.value)}
-        placeholder="Your Discord ID"
-        className="w-full px-4 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:border-blue-500 focus:outline-none mb-4"
-      />
-      <p className="text-gray-400 text-sm mb-4">
-        Don't know your Discord ID? Right-click your name in Discord and copy User ID
-      </p>
-      <button
-        type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
-      >
-        Access Dashboard
-      </button>
-    </form>
+    <div className="min-h-screen bg-gradient-to-br from-dark-bg via-dark-card to-dark-bg flex items-center justify-center p-4 overflow-hidden">
+      {/* Animated Background Glow */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-neon-cyan opacity-10 rounded-full blur-3xl animate-blob"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-neon-magenta opacity-10 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+
+      {/* Main Container */}
+      <div className="relative z-10 w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-black mb-4">
+            <span className="text-glow-cyan">💪</span>
+            <span className="text-white"> FITNESS</span>
+            <br />
+            <span className="text-glow-magenta">COACH</span>
+          </h1>
+          <p className="text-neon-cyan text-lg tracking-widest uppercase">
+            Track • Train • Transform
+          </p>
+          <div className="h-1 bg-gradient-to-r from-neon-cyan via-neon-magenta to-neon-lime mt-4 rounded-full"></div>
+        </div>
+
+        {/* Card */}
+        <div className="neon-card border-neon-cyan mb-8 p-8">
+          <h2 className="text-center text-2xl font-bold text-glow-cyan mb-2">
+            ENTER THE MATRIX
+          </h2>
+          <p className="text-center text-neon-cyan text-sm mb-8">
+            Connect with your Discord ID to access your training hub
+          </p>
+
+          <form onSubmit={handleAccess} className="space-y-6">
+            {/* Input Field */}
+            <div className="relative group">
+              <input
+                type="text"
+                value={discordId}
+                onChange={(e) => setDiscordId(e.target.value)}
+                placeholder="Your Discord ID"
+                className="w-full px-6 py-4 bg-dark-bg border-2 border-neon-cyan rounded-lg text-white placeholder-neon-cyan placeholder-opacity-50 focus:outline-none focus:border-neon-lime focus:shadow-lg transition-all duration-300 glow-cyan"
+                required
+              />
+              <div className="absolute inset-0 rounded-lg bg-neon-cyan opacity-0 group-focus-within:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
+            </div>
+
+            {/* Help Text */}
+            <p className="text-center text-neon-cyan text-sm">
+              💡 Right-click your name in Discord → Copy User ID
+            </p>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={!discordId.trim() || isLoading}
+              className={`w-full btn-neon-lime py-4 text-lg font-bold uppercase tracking-widest transition-all duration-300 ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'
+              }`}
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <span className="animate-spin mr-2">⚙️</span>
+                  INITIALIZING...
+                </span>
+              ) : (
+                '🚀 ACCESS DASHBOARD'
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Features */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="neon-card border-neon-cyan p-4 text-center">
+            <div className="text-2xl mb-2">📊</div>
+            <p className="text-neon-cyan text-xs uppercase font-bold">Track</p>
+          </div>
+          <div className="neon-card border-neon-magenta p-4 text-center">
+            <div className="text-2xl mb-2">💪</div>
+            <p className="text-neon-magenta text-xs uppercase font-bold">Train</p>
+          </div>
+          <div className="neon-card border-neon-lime p-4 text-center">
+            <div className="text-2xl mb-2">🎯</div>
+            <p className="text-neon-lime text-xs uppercase font-bold">Achieve</p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center">
+          <p className="text-neon-cyan text-xs opacity-70">
+            Powered by AI Fitness Coach • Built with Next-Gen Tech
+          </p>
+          <div className="mt-4 flex justify-center space-x-2">
+            <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-neon-magenta rounded-full animate-pulse animation-delay-1000"></div>
+            <div className="w-2 h-2 bg-neon-lime rounded-full animate-pulse animation-delay-2000"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
