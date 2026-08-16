@@ -15,7 +15,6 @@ function Nutrition({ user, supabase }) {
 
   const fetchNutritionData = async () => {
     try {
-      // FIXED: First get the user record using discord_id
       const { data: userRecord } = await supabase
         .from('users')
         .select('id')
@@ -36,7 +35,6 @@ function Nutrition({ user, supabase }) {
       const todayStart = today + 'T00:00:00';
       const todayEnd = today + 'T23:59:59';
 
-      // FIXED: Use created_at instead of meal_date, and userRecord.id instead of user.id
       const { data: todayMeals } = await supabase
         .from('meals')
         .select('*')
@@ -70,7 +68,6 @@ function Nutrition({ user, supabase }) {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       const sevenDaysAgoStr = sevenDaysAgo.toISOString();
 
-      // FIXED: Use created_at instead of meal_date, and userRecord.id instead of user.id
       const { data: weekMeals } = await supabase
         .from('meals')
         .select('*')
