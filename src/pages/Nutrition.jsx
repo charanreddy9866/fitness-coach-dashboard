@@ -18,7 +18,7 @@ function Nutrition({ user, supabase }) {
       // FIXED: First get the user record using discord_id
       const { data: userRecord } = await supabase
         .from('users')
-        .select('id, daily_protein_goal, daily_carbs_goal, daily_fats_goal')
+        .select('id')
         .eq('discord_id', user.id)
         .single();
 
@@ -27,9 +27,9 @@ function Nutrition({ user, supabase }) {
       }
 
       setGoals({
-        protein: userRecord?.daily_protein_goal || 150,
-        carbs: userRecord?.daily_carbs_goal || 200,
-        fats: userRecord?.daily_fats_goal || 50,
+        protein: 150,
+        carbs: 200,
+        fats: 50,
       });
 
       const today = new Date().toISOString().split('T')[0];
