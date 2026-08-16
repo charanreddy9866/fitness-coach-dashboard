@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Progress from './pages/Progress';
 import Nutrition from './pages/Nutrition';
@@ -7,7 +9,6 @@ import Settings from './pages/Settings';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [currentPage, setCurrentPage] = useState('dashboard');
   const [loading, setLoading] = useState(true);
 
   const supabase = createClient(
@@ -169,55 +170,17 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg">
-      <nav className="bg-dark-card border-b-2 border-neon-cyan p-4 sticky top-0 z-50">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <h1 className="text-2xl font-bold text-glow-cyan">💪 FITNESS COACH</h1>
-          <div className="flex gap-4">
-            <button
-              onClick={() => setCurrentPage('dashboard')}
-              className={`px-4 py-2 rounded ${currentPage === 'dashboard' ? 'border-2 border-neon-cyan text-glow-cyan' : 'text-neon-cyan'}`}
-            >
-              Dashboard
-            </button>
-            <button
-              onClick={() => setCurrentPage('progress')}
-              className={`px-4 py-2 rounded ${currentPage === 'progress' ? 'border-2 border-neon-magenta text-glow-magenta' : 'text-neon-magenta'}`}
-            >
-              Progress
-            </button>
-            <button
-              onClick={() => setCurrentPage('nutrition')}
-              className={`px-4 py-2 rounded ${currentPage === 'nutrition' ? 'border-2 border-neon-lime text-glow-lime' : 'text-neon-lime'}`}
-            >
-              Nutrition
-            </button>
-            <button
-              onClick={() => setCurrentPage('settings')}
-              className={`px-4 py-2 rounded text-gray-400`}
-            >
-              Settings
-            </button>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-neon-cyan">Welcome, <span className="text-glow-lime">{user.username}</span>!</span>
-            <button
-              onClick={handleLogout}
-              className="btn-neon-magenta"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <div>
-        {currentPage === 'dashboard' && <Dashboard user={user} supabase={supabase} />}
-        {currentPage === 'progress' && <Progress user={user} supabase={supabase} />}
-        {currentPage === 'nutrition' && <Nutrition user={user} supabase={supabase} />}
-        {currentPage === 'settings' && <Settings user={user} supabase={supabase} />}
-      </div>
-    </div>
+    <Router>
+      <Layout user={user} onLogout={handleLogout}>
+        <Routes>
+          <Route path="/" element={<Dashboard user={user} supabase={supabase} />} />
+          <Route path="/progress" element={<Progress user={user} supabase={supabase} />} />
+          <Route path="/nutrition" element={<Nutrition user={user} supabase={supabase} />} />
+          <Route path="/settings" element={<Settings user={user} supabase={supabase} />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
 }
 
