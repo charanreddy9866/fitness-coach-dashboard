@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Home, TrendingUp, Apple, Settings } from 'lucide-react';
+import { Menu, X, Home, TrendingUp, Apple, Settings, LogOut } from 'lucide-react';
 
-export default function Sidebar() {
+export default function Sidebar({ user, onLogout }) {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
@@ -36,16 +36,24 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen w-64 bg-black text-white transition-transform duration-300 ease-in-out z-40 lg:translate-x-0 ${
+        className={`fixed left-0 top-0 h-screen w-64 bg-dark-card border-r-2 border-neon-cyan text-white transition-transform duration-300 ease-in-out z-40 lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo Section */}
-          <div className="p-6 border-b border-gray-700">
-            <h1 className="text-2xl font-bold text-white">fitagent_ai</h1>
-            <p className="text-sm text-gray-400 mt-1">Fitness Coach</p>
+          <div className="p-6 border-b-2 border-neon-cyan">
+            <h1 className="text-2xl font-bold text-glow-cyan">💪 FITNESS</h1>
+            <p className="text-neon-magenta text-sm mt-1 font-bold">COACH</p>
           </div>
+
+          {/* User Info Section */}
+          {user && (
+            <div className="px-6 py-4 border-b border-neon-cyan/30">
+              <p className="text-xs text-neon-cyan uppercase tracking-widest">Logged in as</p>
+              <p className="text-glow-lime font-bold mt-1">{user.username}</p>
+            </div>
+          )}
 
           {/* Navigation Links */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
@@ -56,25 +64,26 @@ export default function Sidebar() {
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                   isActive(path)
-                    ? 'bg-white text-black font-semibold'
-                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    ? 'border-2 border-neon-cyan text-glow-cyan bg-opacity-10'
+                    : 'text-neon-cyan hover:bg-gray-800/30 hover:text-glow-cyan'
                 }`}
               >
                 <Icon size={20} />
-                <span>{label}</span>
+                <span className="font-medium">{label}</span>
               </Link>
             ))}
           </nav>
 
           {/* Footer Section */}
-          <div className="p-4 border-t border-gray-700">
+          <div className="p-4 border-t-2 border-neon-cyan">
             <button
               onClick={() => {
-                localStorage.removeItem('discordId');
-                window.location.reload();
+                setIsOpen(false);
+                onLogout();
               }}
-              className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white text-sm font-medium transition-colors"
+              className="w-full px-4 py-2 bg-neon-magenta hover:bg-glow-magenta rounded-lg text-black text-sm font-bold uppercase transition-all flex items-center justify-center gap-2"
             >
+              <LogOut size={18} />
               Logout
             </button>
           </div>
@@ -82,7 +91,7 @@ export default function Sidebar() {
       </aside>
 
       {/* Main Content Wrapper */}
-      <div className="lg:ml-64 min-h-screen bg-gray-50">
+      <div className="lg:ml-64 min-h-screen bg-dark-bg">
         {/* Top padding for mobile to account for fixed hamburger */}
         <div className="lg:hidden h-16" />
       </div>
