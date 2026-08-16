@@ -33,12 +33,16 @@ function Nutrition({ user, supabase }) {
       });
 
       const today = new Date().toISOString().split('T')[0];
-      // FIXED: Now use userRecord.id (Supabase UUID) instead of user.id (Discord ID)
+      const todayStart = today + 'T00:00:00';
+      const todayEnd = today + 'T23:59:59';
+
+      // FIXED: Use created_at instead of meal_date, and userRecord.id instead of user.id
       const { data: todayMeals } = await supabase
         .from('meals')
         .select('*')
         .eq('user_id', userRecord.id)
-        .eq('meal_date', today);
+        .gte('created_at', todayStart)
+        .lt('created_at', todayEnd);
 
       let totalCalories = 0;
       let totalProtein = 0;
@@ -64,14 +68,14 @@ function Nutrition({ user, supabase }) {
 
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+      const sevenDaysAgoStr = sevenDaysAgo.toISOString();
 
-      // FIXED: Use userRecord.id instead of user.id
+      // FIXED: Use created_at instead of meal_date, and userRecord.id instead of user.id
       const { data: weekMeals } = await supabase
         .from('meals')
         .select('*')
         .eq('user_id', userRecord.id)
-        .gte('meal_date', sevenDaysAgoStr);
+        .gte('created_at', sevenDaysAgoStr);
 
       if (weekMeals) {
         const dayMap = {};
@@ -83,10 +87,10 @@ function Nutrition({ user, supabase }) {
         }
 
         weekMeals.forEach(meal => {
-          const date = meal.meal_date;
-          if (dayMap.hasOwnProperty(date)) {
-            dayMap[date].calories += meal.calories || 0;
-            dayMap[date].protein += meal.protein || 0;
+          const mealDate = meal.created_at.split('T')[0];
+          if (dayMap.hasOwnProperty(mealDate)) {
+            dayMap[mealDate].calories += meal.calories || 0;
+            dayMap[mealDate].protein += meal.protein || 0;
           }
         });
 
@@ -129,7 +133,7 @@ function Nutrition({ user, supabase }) {
             <div className="space-y-2">
               {dailyData.meals.map((meal, idx) => (
                 <div key={idx} className="bg-gray-700 p-3 rounded flex justify-between">
-                  <span>{meal.food_name}</span>
+                  <span>{meal.meal_name}</span>
                   <span className="text-gray-300">{meal.calories} kcal</span>
                 </div>
               ))}
