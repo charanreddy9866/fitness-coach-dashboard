@@ -15,23 +15,29 @@ function Nutrition({ user, supabase }) {
 
   const fetchNutritionData = async () => {
     try {
-      const { data: userData } = await supabase
+      // FIXED: First get the user record using discord_id
+      const { data: userRecord } = await supabase
         .from('users')
-        .select('daily_protein_goal, daily_carbs_goal, daily_fats_goal')
-        .eq('id', user.id)
+        .select('id, daily_protein_goal, daily_carbs_goal, daily_fats_goal')
+        .eq('discord_id', user.id)
         .single();
 
+      if (!userRecord) {
+        throw new Error('User not found');
+      }
+
       setGoals({
-        protein: userData?.daily_protein_goal || 150,
-        carbs: userData?.daily_carbs_goal || 200,
-        fats: userData?.daily_fats_goal || 50,
+        protein: userRecord?.daily_protein_goal || 150,
+        carbs: userRecord?.daily_carbs_goal || 200,
+        fats: userRecord?.daily_fats_goal || 50,
       });
 
       const today = new Date().toISOString().split('T')[0];
+      // FIXED: Now use userRecord.id (Supabase UUID) instead of user.id (Discord ID)
       const { data: todayMeals } = await supabase
         .from('meals')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userRecord.id)
         .eq('meal_date', today);
 
       let totalCalories = 0;
@@ -60,10 +66,11 @@ function Nutrition({ user, supabase }) {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
 
+      // FIXED: Use userRecord.id instead of user.id
       const { data: weekMeals } = await supabase
         .from('meals')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userRecord.id)
         .gte('meal_date', sevenDaysAgoStr);
 
       if (weekMeals) {
