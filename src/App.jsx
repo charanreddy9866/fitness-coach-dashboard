@@ -8,34 +8,105 @@ import Settings from './pages/Settings';
 function App() {
   const [user, setUser] = useState(null);
   const [currentPage, setCurrentPage] = useState('dashboard');
-  const [discordId, setDiscordId] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_KEY
-);
+    process.env.REACT_APP_SUPABASE_URL,
+    process.env.REACT_APP_SUPABASE_KEY
+  );
 
   useEffect(() => {
-    const saved = localStorage.getItem('discordId');
-    if (saved) {
-      setUser({ id: saved });
-    }
+    checkAuth();
   }, []);
 
-  const handleAccess = (e) => {
-    e.preventDefault();
-    if (discordId.trim()) {
-      localStorage.setItem('discordId', discordId);
-      setIsLoading(true);
-      setTimeout(() => {
-        setUser({ id: discordId });
-        setIsLoading(false);
-      }, 500);
+  const checkAuth = async () => {
+    const token = localStorage.getItem('discord_token');
+    const userId = localStorage.getItem('discord_user_id');
+    const username = localStorage.getItem('discord_username');
+
+    if (token && userId) {
+      setUser({ id: userId, username, token });
+      setLoading(false);
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+
+    if (code) {
+      await handleOAuthCallback(code);
+    }
+
+    setLoading(false);
+  };
+
+  const handleOAuthCallback = async (code) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/discord`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) throw new Error(data.error);
+
+      const { user: discordUser, token } = data;
+
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('id')
+        .eq('discord_id', discordUser.id)
+        .maybeSingle();
+
+      if (!existingUser) {
+        await supabase.from('users').insert([
+          {
+            discord_id: discordUser.id,
+            username: discordUser.username,
+            fitness_level: 'beginner',
+            goals: 'general fitness',
+          },
+        ]);
+      }
+
+      localStorage.setItem('discord_token', token);
+      localStorage.setItem('discord_user_id', discordUser.id);
+      localStorage.setItem('discord_username', discordUser.username);
+
+      setUser({ id: discordUser.id, username: discordUser.username, token });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch (error) {
+      console.error('OAuth error:', error);
+      alert('Login failed: ' + error.message);
     }
   };
 
-  // LOGIN PAGE
+  const handleLogin = () => {
+    const clientId = process.env.REACT_APP_DISCORD_CLIENT_ID;
+    const redirectUri = encodeURIComponent('https://fitness-coach-dashboard.vercel.app/auth/callback');
+    const scope = encodeURIComponent('identify');
+
+    const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
+    window.location.href = authUrl;
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('discord_token');
+    localStorage.removeItem('discord_user_id');
+    localStorage.removeItem('discord_username');
+    setUser(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+        <div className="text-glow-cyan text-2xl">⚙️ INITIALIZING...</div>
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-dark-bg via-dark-card to-dark-bg flex items-center justify-center p-4 overflow-hidden">
@@ -61,43 +132,15 @@ function App() {
               ENTER THE MATRIX
             </h2>
             <p className="text-center text-neon-cyan text-sm mb-8">
-              Connect with your Discord ID to access your training hub
+              Connect with Discord to access your AI fitness hub
             </p>
 
-            <form onSubmit={handleAccess} className="space-y-6">
-              <div className="relative group">
-                <input
-                  type="text"
-                  value={discordId}
-                  onChange={(e) => setDiscordId(e.target.value)}
-                  placeholder="Your Discord ID"
-                  className="w-full px-6 py-4 bg-dark-bg border-2 border-neon-cyan rounded-lg text-white placeholder-neon-cyan placeholder-opacity-50 focus:outline-none focus:border-neon-lime focus:shadow-lg transition-all duration-300 glow-cyan"
-                  required
-                />
-                <div className="absolute inset-0 rounded-lg bg-neon-cyan opacity-0 group-focus-within:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
-              </div>
-
-              <p className="text-center text-neon-cyan text-sm">
-                💡 Right-click your name in Discord → Copy User ID
-              </p>
-
-              <button
-                type="submit"
-                disabled={!discordId.trim() || isLoading}
-                className={`w-full btn-neon-lime py-4 text-lg font-bold uppercase tracking-widest transition-all duration-300 ${
-                  isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'
-                }`}
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center">
-                    <span className="animate-spin mr-2">⚙️</span>
-                    INITIALIZING...
-                  </span>
-                ) : (
-                  '🚀 ACCESS DASHBOARD'
-                )}
-              </button>
-            </form>
+            <button
+              onClick={handleLogin}
+              className="w-full btn-neon-lime py-4 text-lg font-bold uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+            >
+              🎮 LOGIN WITH DISCORD
+            </button>
           </div>
 
           <div className="grid grid-cols-3 gap-4 mb-8">
@@ -119,18 +162,12 @@ function App() {
             <p className="text-neon-cyan text-xs opacity-70">
               Powered by AI Fitness Coach • Built with Next-Gen Tech
             </p>
-            <div className="mt-4 flex justify-center space-x-2">
-              <div className="w-2 h-2 bg-neon-cyan rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-neon-magenta rounded-full animate-pulse animation-delay-1000"></div>
-              <div className="w-2 h-2 bg-neon-lime rounded-full animate-pulse animation-delay-2000"></div>
-            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  // DASHBOARD
   return (
     <div className="min-h-screen bg-dark-bg">
       <nav className="bg-dark-card border-b-2 border-neon-cyan p-4 sticky top-0 z-50">
@@ -162,15 +199,15 @@ function App() {
               Settings
             </button>
           </div>
-          <button
-            onClick={() => {
-              localStorage.removeItem('discordId');
-              setUser(null);
-            }}
-            className="btn-neon-magenta"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-4">
+            <span className="text-neon-cyan">Welcome, <span className="text-glow-lime">{user.username}</span>!</span>
+            <button
+              onClick={handleLogout}
+              className="btn-neon-magenta"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </nav>
 
