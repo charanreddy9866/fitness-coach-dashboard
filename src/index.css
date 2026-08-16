@@ -1,0 +1,175 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Neon Glow Effects */
+.glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.8);
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+}
+
+.glow-magenta {
+  text-shadow: 0 0 10px rgba(255, 0, 110, 0.8);
+  box-shadow: 0 0 20px rgba(255, 0, 110, 0.6);
+}
+
+.glow-lime {
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+}
+
+.glow-pink {
+  text-shadow: 0 0 10px rgba(255, 0, 153, 0.8);
+  box-shadow: 0 0 20px rgba(255, 0, 153, 0.6);
+}
+
+.glow-yellow {
+  text-shadow: 0 0 10px rgba(255, 214, 10, 0.8);
+  box-shadow: 0 0 20px rgba(255, 214, 10, 0.6);
+}
+
+/* Neon Border */
+.border-neon {
+  border: 2px solid;
+  position: relative;
+}
+
+.border-neon-cyan {
+  border-color: #00D9FF;
+  box-shadow: inset 0 0 10px rgba(0, 217, 255, 0.3), 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.border-neon-magenta {
+  border-color: #FF006E;
+  box-shadow: inset 0 0 10px rgba(255, 0, 110, 0.3), 0 0 10px rgba(255, 0, 110, 0.5);
+}
+
+.border-neon-lime {
+  border-color: #00FF41;
+  box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.3), 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+/* Card Styling */
+.neon-card {
+  background: rgba(26, 31, 58, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.neon-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+  border-color: rgba(0, 217, 255, 0.5);
+}
+
+/* Button Styling */
+.btn-neon {
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid;
+  background: transparent;
+}
+
+.btn-neon-cyan {
+  border-color: #00D9FF;
+  color: #00D9FF;
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+.btn-neon-cyan:hover {
+  background: rgba(0, 217, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.8);
+  transform: scale(1.05);
+}
+
+.btn-neon-magenta {
+  border-color: #FF006E;
+  color: #FF006E;
+  box-shadow: 0 0 10px rgba(255, 0, 110, 0.5);
+}
+
+.btn-neon-magenta:hover {
+  background: rgba(255, 0, 110, 0.1);
+  box-shadow: 0 0 20px rgba(255, 0, 110, 0.8);
+  transform: scale(1.05);
+}
+
+.btn-neon-lime {
+  border-color: #00FF41;
+  color: #00FF41;
+  background: rgba(0, 255, 65, 0.2);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.btn-neon-lime:hover {
+  background: rgba(0, 255, 65, 0.3);
+  box-shadow: 0 0 30px rgba(0, 255, 65, 1);
+  transform: scale(1.05);
+}
+
+/* Animated Border */
+@keyframes borderAnimation {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 217, 255, 0.9);
+  }
+}
+
+.animate-border {
+  animation: borderAnimation 2s ease-in-out infinite;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0e27;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #00D9FF, #FF006E);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #00FF41, #FF0099);
+}
+
+/* Text Glow */
+.text-glow-cyan {
+  color: #00D9FF;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.8);
+}
+
+.text-glow-magenta {
+  color: #FF006E;
+  text-shadow: 0 0 10px rgba(255, 0, 110, 0.8);
+}
+
+.text-glow-lime {
+  color: #00FF41;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
+}
